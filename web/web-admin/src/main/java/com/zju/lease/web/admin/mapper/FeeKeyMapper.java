@@ -2,6 +2,7 @@ package com.zju.lease.web.admin.mapper;
 
 import com.zju.lease.model.entity.FeeKey;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.zju.lease.web.admin.vo.fee.FeeKeyVo;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
 */
 public interface FeeKeyMapper extends BaseMapper<FeeKey> {
 
+    List<FeeKeyVo> feeInfoList();
 }
 
 
