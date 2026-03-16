@@ -39,7 +39,7 @@ public class ApartmentController {
     @GetMapping("pageItem")
     public Result<IPage<ApartmentItemVo>> pageItem(@RequestParam long current, @RequestParam long size, ApartmentQueryVo queryVo) {
         Page<ApartmentItemVo> page = new Page<>(current, size);
-        // 由于需要多表查询（房间总数与空余房间数需要查房间表和租约表），因此需要自定义sql
+        // 由于需要多表查询（房间总数与空余房间数需要查房间表和租约表），因此需要自定义SQL
         IPage<ApartmentItemVo> result = service.pageItem(page, queryVo);
         return Result.ok(result);
     }
@@ -47,12 +47,15 @@ public class ApartmentController {
     @Operation(summary = "根据id获取公寓详细信息")
     @GetMapping("getDetailById")
     public Result<ApartmentDetailVo> getDetailById(@RequestParam Long id) {
-        return Result.ok();
+        // 由于需要来自很多表的数据，因此直接在代码中实现多表查询，而非在SQL语句中
+        ApartmentDetailVo result = service.getDetailById(id);
+        return Result.ok(result);
     }
 
     @Operation(summary = "根据id删除公寓信息")
     @DeleteMapping("removeById")
     public Result removeById(@RequestParam Long id) {
+        service.removeApartmentById(id);
         return Result.ok();
     }
 
