@@ -4,6 +4,7 @@ package com.zju.lease.web.admin.controller.apartment;
 import com.zju.lease.common.result.Result;
 import com.zju.lease.model.entity.RoomInfo;
 import com.zju.lease.model.enums.ReleaseStatus;
+import com.zju.lease.web.admin.service.RoomInfoService;
 import com.zju.lease.web.admin.vo.room.RoomDetailVo;
 import com.zju.lease.web.admin.vo.room.RoomItemVo;
 import com.zju.lease.web.admin.vo.room.RoomQueryVo;
@@ -11,6 +12,7 @@ import com.zju.lease.web.admin.vo.room.RoomSubmitVo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,9 +22,13 @@ import java.util.List;
 @RequestMapping("/admin/room")
 public class RoomController {
 
+    @Autowired
+    private RoomInfoService service;
+
     @Operation(summary = "保存或更新房间信息")
     @PostMapping("saveOrUpdate")
     public Result saveOrUpdate(@RequestBody RoomSubmitVo roomSubmitVo) {
+        service.saveOrUpdateRoom(roomSubmitVo); // TODO: 尚待实现saveOrUpdate的逻辑
         return Result.ok();
     }
 
