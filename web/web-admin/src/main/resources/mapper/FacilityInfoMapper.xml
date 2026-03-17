@@ -14,4 +14,14 @@
                         WHERE is_deleted = 0
                         AND apartment_id = #{id})
     </select>
+    <select id="selectListByRoomId" resultType="com.zju.lease.model.entity.FacilityInfo">
+        SELECT id, type, name, icon
+        FROM facility_info
+        WHERE is_deleted = 0
+        AND id IN (SELECT
+                        facility_id
+                        FROM room_facility
+                        WHERE is_deleted = 0
+                        AND room_id = #{id})
+    </select>
 </mapper>
