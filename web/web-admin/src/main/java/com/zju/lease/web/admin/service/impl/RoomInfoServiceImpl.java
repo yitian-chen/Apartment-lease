@@ -141,10 +141,32 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo>
         }
 
         // 插入支付方式列表
+        List<Long> paymentTypeIds = roomSubmitVo.getPaymentTypeIds();
+        if (!CollectionUtils.isEmpty(paymentTypeIds)) {
+            ArrayList<RoomPaymentType> roomPaymentTypeList = new ArrayList<>();
+            for (Long paymentTypeId : paymentTypeIds) {
+                RoomPaymentType roomPaymentType = new RoomPaymentType();
+                roomPaymentType.setRoomId(roomSubmitVo.getId());
+                roomPaymentType.setPaymentTypeId(paymentTypeId);
+                roomPaymentTypeList.add(roomPaymentType);
+            }
 
+            roomPaymentTypeService.saveBatch(roomPaymentTypeList);
+        }
 
         // 插入可选租期列表
+        List<Long> leaseTermIds = roomSubmitVo.getLeaseTermIds();
+        if (!CollectionUtils.isEmpty(leaseTermIds)) {
+            ArrayList<RoomLeaseTerm> roomLeaseTermList = new ArrayList<>();
+            for (Long leaseTermId : leaseTermIds) {
+                RoomLeaseTerm roomLeaseTerm = new RoomLeaseTerm();
+                roomLeaseTerm.setRoomId(roomSubmitVo.getId());
+                roomLeaseTerm.setLeaseTermId(leaseTermId);
+                roomLeaseTermList.add(roomLeaseTerm);
+            }
 
+            roomLeaseTermService.saveBatch(roomLeaseTermList);
+        }
 
     }
 }
