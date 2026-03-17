@@ -2,6 +2,7 @@ package com.zju.lease.web.admin.controller.user;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zju.lease.common.result.Result;
 import com.zju.lease.model.entity.UserInfo;
@@ -36,6 +37,10 @@ public class UserInfoController {
     @Operation(summary = "根据用户id更新账号状态")
     @PostMapping("updateStatusById")
     public Result updateStatusById(@RequestParam Long id, @RequestParam BaseStatus status) {
+        LambdaUpdateWrapper<UserInfo> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(UserInfo::getId, id);
+        updateWrapper.set(UserInfo::getStatus, status);
+        service.update(updateWrapper);
         return Result.ok();
     }
 }
