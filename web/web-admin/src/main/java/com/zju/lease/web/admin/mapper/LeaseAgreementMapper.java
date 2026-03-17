@@ -1,8 +1,11 @@
 package com.zju.lease.web.admin.mapper;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zju.lease.model.entity.LeaseAgreement;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.zju.lease.web.admin.vo.agreement.AgreementQueryVo;
+import com.zju.lease.web.admin.vo.agreement.AgreementVo;
 
 /**
 * @author liubo
@@ -12,6 +15,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 */
 public interface LeaseAgreementMapper extends BaseMapper<LeaseAgreement> {
 
+    IPage<AgreementVo> pageAgreement(Page<AgreementVo> page, AgreementQueryVo queryVo);
 }
 
 

@@ -1,9 +1,12 @@
 package com.zju.lease.web.admin.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zju.lease.model.entity.*;
 import com.zju.lease.web.admin.mapper.*;
 import com.zju.lease.web.admin.service.LeaseAgreementService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zju.lease.web.admin.vo.agreement.AgreementQueryVo;
 import com.zju.lease.web.admin.vo.agreement.AgreementVo;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.BeanUtils;
@@ -54,6 +57,11 @@ public class LeaseAgreementServiceImpl extends ServiceImpl<LeaseAgreementMapper,
         agreementVo.setLeaseTerm(leaseTerm);
 
         return agreementVo;
+    }
+
+    @Override
+    public IPage<AgreementVo> pageAgreement(Page<AgreementVo> page, AgreementQueryVo queryVo) {
+        return leaseAgreementMapper.pageAgreement(page, queryVo);
     }
 }
 

@@ -2,6 +2,7 @@ package com.zju.lease.web.admin.controller.lease;
 
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zju.lease.common.result.Result;
 import com.zju.lease.model.entity.LeaseAgreement;
 import com.zju.lease.model.enums.LeaseStatus;
@@ -33,7 +34,9 @@ public class LeaseAgreementController {
     @Operation(summary = "根据条件分页查询租约列表")
     @GetMapping("page")
     public Result<IPage<AgreementVo>> page(@RequestParam long current, @RequestParam long size, AgreementQueryVo queryVo) {
-        return Result.ok();
+        Page<AgreementVo> page = new Page<>(current, size);
+        IPage<AgreementVo> result = service.pageAgreement(page, queryVo);
+        return Result.ok(result);
     }
 
     @Operation(summary = "根据id查询租约信息")
