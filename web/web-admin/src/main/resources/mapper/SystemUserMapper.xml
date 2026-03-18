@@ -28,4 +28,19 @@
             </if>
         </where>
     </select>
+    <select id="selectOneByUsername" resultType="com.zju.lease.model.entity.SystemUser">
+        SELECT id,
+                username,
+                password,
+                name,
+                type,
+                phone,
+                avatar_url,
+                additional_info,
+                post_id,
+                status
+        FROM system_user
+        WHERE is_deleted = 0
+        AND username = #{username}
+    </select>
 </mapper>

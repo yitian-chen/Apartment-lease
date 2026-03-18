@@ -5,6 +5,7 @@ import com.wf.captcha.SpecCaptcha;
 import com.zju.lease.common.constant.RedisConstant;
 import com.zju.lease.common.exception.LeaseException;
 import com.zju.lease.common.result.ResultCodeEnum;
+import com.zju.lease.common.utils.JwtUtil;
 import com.zju.lease.model.entity.SystemUser;
 import com.zju.lease.model.enums.BaseStatus;
 import com.zju.lease.web.admin.mapper.SystemUserMapper;
@@ -58,9 +59,8 @@ public class LoginServiceImpl implements LoginService {
             throw new LeaseException(ResultCodeEnum.ADMIN_CAPTCHA_CODE_ERROR);
         }
 
-        LambdaQueryWrapper<SystemUser> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(SystemUser::getUsername, loginVo.getUsername());
-        SystemUser systemUser = systemUserMapper.selectOne(queryWrapper);
+        // 由于默认密码被忽略，需要自定义SQL读取密码
+        SystemUser systemUser = systemUserMapper.selectOneByUsername(loginVo.getUsername());
 
         if (systemUser == null) {
             throw new LeaseException(ResultCodeEnum.ADMIN_ACCOUNT_NOT_EXIST_ERROR);
@@ -74,6 +74,6 @@ public class LoginServiceImpl implements LoginService {
             throw new LeaseException(ResultCodeEnum.ADMIN_ACCOUNT_ERROR);
         }
 
-        return "";
+        return JwtUtil.createToken(systemUser.getId(), systemUser.getUsername());
     }
 }

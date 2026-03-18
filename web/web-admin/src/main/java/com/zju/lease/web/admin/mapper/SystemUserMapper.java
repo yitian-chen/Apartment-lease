@@ -16,6 +16,8 @@ import com.zju.lease.web.admin.vo.system.user.SystemUserQueryVo;
 public interface SystemUserMapper extends BaseMapper<SystemUser> {
 
     IPage<SystemUserItemVo> pageSystemUser(Page<SystemUser> page, SystemUserQueryVo queryVo);
+
+    SystemUser selectOneByUsername(String username);
 }
 
 
