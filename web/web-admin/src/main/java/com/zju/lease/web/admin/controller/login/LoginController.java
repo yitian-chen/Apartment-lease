@@ -1,6 +1,8 @@
 package com.zju.lease.web.admin.controller.login;
 
 
+import com.zju.lease.common.login.LoginUser;
+import com.zju.lease.common.login.LoginUserHolder;
 import com.zju.lease.common.result.Result;
 import com.zju.lease.common.utils.JwtUtil;
 import com.zju.lease.web.admin.service.LoginService;
@@ -38,9 +40,8 @@ public class LoginController {
 
     @Operation(summary = "获取登陆用户个人信息")
     @GetMapping("info")
-    public Result<SystemUserInfoVo> info(@RequestHeader("access-token") String token) {
-        Claims claims = JwtUtil.parseToken(token);
-        Long userId = claims.get("userId", Long.class);
+    public Result<SystemUserInfoVo> info() {
+        Long userId = LoginUserHolder.getLoginUser().getUserId();
         SystemUserInfoVo systemUserInfoVo = service.getLoginUserInfoById(userId);
         return Result.ok(systemUserInfoVo);
     }
