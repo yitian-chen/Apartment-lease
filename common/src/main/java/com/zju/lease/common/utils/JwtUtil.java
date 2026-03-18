@@ -1,7 +1,8 @@
 package com.zju.lease.common.utils;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.zju.lease.common.exception.LeaseException;
+import com.zju.lease.common.result.ResultCodeEnum;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 
 import javax.crypto.SecretKey;
@@ -20,6 +21,18 @@ public class JwtUtil {
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
         return jwt;
+    }
+
+    // 解析验证 jwt 的方法
+    public static void parseToken(String token) {
+        try {
+            JwtParser jwtParser = Jwts.parserBuilder().setSigningKey(secretKey).build();
+            jwtParser.parseClaimsJws(token);
+        } catch (ExpiredJwtException e) {
+            throw new LeaseException(ResultCodeEnum.TOKEN_EXPIRED);
+        } catch (JwtException e) {
+            throw new LeaseException(ResultCodeEnum.TOKEN_INVALID);
+        }
     }
 
     public static void main(String[] args) {
