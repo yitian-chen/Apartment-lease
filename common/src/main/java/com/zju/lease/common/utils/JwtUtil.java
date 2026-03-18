@@ -24,14 +24,15 @@ public class JwtUtil {
     }
 
     // 解析验证 jwt 的方法
-    public static void parseToken(String token) {
+    public static Claims parseToken(String token) {
         if (token == null) {
             throw new LeaseException(ResultCodeEnum.ADMIN_LOGIN_AUTH);
         }
 
         try {
             JwtParser jwtParser = Jwts.parserBuilder().setSigningKey(secretKey).build();
-            jwtParser.parseClaimsJws(token);
+            Jws<Claims> claimsJws = jwtParser.parseClaimsJws(token);
+            return claimsJws.getBody();
         } catch (ExpiredJwtException e) {
             throw new LeaseException(ResultCodeEnum.TOKEN_EXPIRED);
         } catch (JwtException e) {
@@ -40,6 +41,6 @@ public class JwtUtil {
     }
 
     public static void main(String[] args) {
-        System.out.println(createToken(1L, "wild card"));
+        System.out.println(createToken(2L, "user"));
     }
 }

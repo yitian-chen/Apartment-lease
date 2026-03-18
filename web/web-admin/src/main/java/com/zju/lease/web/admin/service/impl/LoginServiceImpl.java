@@ -1,6 +1,5 @@
 package com.zju.lease.web.admin.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.wf.captcha.SpecCaptcha;
 import com.zju.lease.common.constant.RedisConstant;
 import com.zju.lease.common.exception.LeaseException;
@@ -12,9 +11,8 @@ import com.zju.lease.web.admin.mapper.SystemUserMapper;
 import com.zju.lease.web.admin.service.LoginService;
 import com.zju.lease.web.admin.vo.login.CaptchaVo;
 import com.zju.lease.web.admin.vo.login.LoginVo;
+import com.zju.lease.web.admin.vo.system.user.SystemUserInfoVo;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.checkerframework.checker.units.qual.A;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -75,5 +73,15 @@ public class LoginServiceImpl implements LoginService {
         }
 
         return JwtUtil.createToken(systemUser.getId(), systemUser.getUsername());
+    }
+
+    @Override
+    public SystemUserInfoVo getLoginUserInfoById(Long userId) {
+        SystemUser systemUser = systemUserMapper.selectById(userId);
+        SystemUserInfoVo systemUserInfoVo = new SystemUserInfoVo();
+        systemUserInfoVo.setName(systemUser.getName());
+        systemUserInfoVo.setAvatarUrl(systemUserInfoVo.getAvatarUrl());
+
+        return systemUserInfoVo;
     }
 }
