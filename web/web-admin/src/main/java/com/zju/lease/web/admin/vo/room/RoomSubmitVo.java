@@ -1,6 +1,7 @@
 package com.zju.lease.web.admin.vo.room;
 
-import com.zju.lease.model.entity.RoomInfo;
+import com.zju.lease.model.entity.*;
+import com.zju.lease.web.admin.vo.attr.AttrValueVo;
 import com.zju.lease.web.admin.vo.graph.GraphVo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -16,18 +17,18 @@ public class RoomSubmitVo extends RoomInfo {
     private List<GraphVo> graphVoList;
 
     @Schema(description = "属性信息列表")
-    private List<Long> attrValueIds;
+    private List<AttrValueVo> attrValueVoList;
 
     @Schema(description = "配套信息列表")
-    private List<Long> facilityInfoIds;
+    private List<FacilityInfo> facilityInfoList;
 
     @Schema(description = "标签信息列表")
-    private List<Long> labelInfoIds;
+    private List<LabelInfo> labelInfoList;
 
     @Schema(description = "支付方式列表")
-    private List<Long> paymentTypeIds;
+    private List<PaymentType> paymentTypeList;
 
     @Schema(description = "可选租期列表")
-    private List<Long> leaseTermIds;
+    private List<LeaseTerm> leaseTermList;
 
 }
