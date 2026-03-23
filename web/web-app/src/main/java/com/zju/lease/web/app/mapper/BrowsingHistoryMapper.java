@@ -1,5 +1,6 @@
 package com.zju.lease.web.app.mapper;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zju.lease.model.entity.BrowsingHistory;
 import com.zju.lease.web.app.vo.history.HistoryItemVo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -13,6 +14,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 */
 public interface BrowsingHistoryMapper extends BaseMapper<BrowsingHistory> {
 
+    IPage<HistoryItemVo> pageItemByUserId(Page<HistoryItemVo> page, Long userId);
 }
 
 
