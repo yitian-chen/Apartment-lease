@@ -38,14 +38,39 @@
         LEFT JOIN apartment_info ai
         ON ri.apartment_id = ai.id
         AND ai.is_deleted = 0
-        WHERE ri.is_deleted = 0
-        AND ri.is_release = 1
-        AND ri.id NOT IN (
-                    SELECT room_id
-                    FROM lease_agreement
-                    WHERE is_deleted = 0
-                    AND status IN (2, 5)
-        )
+        <where>
+            ri.is_deleted = 0
+            AND ri.is_release = 1
+            AND ri.id NOT IN (
+                                SELECT room_id
+                                FROM lease_agreement
+                                WHERE is_deleted = 0
+                                AND status IN (2, 5)
+            )
+            <if test="queryVo.provinceId != null">
+                AND ai.province_id = #{queryVo.provinceId}
+            </if>
+            <if test="queryVo.cityId != null">
+                AND ai.city_id = #{queryVo.cityId}
+            </if>
+            <if test="queryVo.districtId != null">
+                AND ai.district_id = #{queryVo.districtId}
+            </if>
+            <if test="queryVo.minRent != null and queryVo.maxRent != null">
+                AND (ri.rent &gt;= #{queryVo.minRent} AND ri.rent &lt;= #{queryVo.maxRent})
+            </if>
+            <if test="queryVo.paymentTypeId != null">
+                AND ri.id IN (
+                            SELECT room_id
+                            FROM room_payment_type
+                            WHERE is_deleted = 0
+                            AND payment_type_id = #{queryVo.paymentTypeId}
+                )
+            </if>
+        </where>
+        <if test="queryVo.orderType == 'desc' or queryVo.orderType == 'asc'">
+            ORDER BY ri.rent ${queryVo.orderType}
+        </if>
     </select>
     
     <select id="selectGraphListByRoomId" resultType="com.zju.lease.web.app.vo.graph.GraphVo">
