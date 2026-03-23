@@ -1,15 +1,14 @@
 package com.zju.lease.web.app.service.impl;
 
 import com.zju.lease.model.entity.ApartmentInfo;
+import com.zju.lease.model.entity.FacilityInfo;
 import com.zju.lease.model.entity.LabelInfo;
 import com.zju.lease.model.enums.ItemType;
-import com.zju.lease.web.app.mapper.ApartmentInfoMapper;
-import com.zju.lease.web.app.mapper.GraphInfoMapper;
-import com.zju.lease.web.app.mapper.LabelInfoMapper;
-import com.zju.lease.web.app.mapper.RoomInfoMapper;
+import com.zju.lease.web.app.mapper.*;
 import com.zju.lease.web.app.service.ApartmentInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zju.lease.web.app.service.RoomInfoService;
+import com.zju.lease.web.app.vo.apartment.ApartmentDetailVo;
 import com.zju.lease.web.app.vo.apartment.ApartmentItemVo;
 import com.zju.lease.web.app.vo.graph.GraphVo;
 import org.springframework.beans.BeanUtils;
@@ -40,6 +39,9 @@ public class ApartmentInfoServiceImpl extends ServiceImpl<ApartmentInfoMapper, A
     @Autowired
     private RoomInfoMapper roomInfoMapper;
 
+    @Autowired
+    private FacilityInfoMapper facilityInfoMapper;
+
     @Override
     public ApartmentItemVo selectApartmentItemVoById(Long id) {
         ApartmentInfo apartmentInfo = apartmentInfoMapper.selectById(id);
@@ -57,6 +59,29 @@ public class ApartmentInfoServiceImpl extends ServiceImpl<ApartmentInfoMapper, A
         apartmentItemVo.setLabelInfoList(labelInfoList);
         apartmentItemVo.setMinRent(minRent);
         return apartmentItemVo;
+    }
+
+    @Override
+    public ApartmentDetailVo getDetailById(Long id) {
+        //1.查询公寓信息
+        ApartmentInfo apartmentInfo = apartmentInfoMapper.selectById(id);
+        //2.查询图片信息
+        List<GraphVo> graphVoList = graphInfoMapper.selectListByItemTypeAndId(ItemType.APARTMENT, id);
+        //3.查询标签信息
+        List<LabelInfo> labelInfoList = labelInfoMapper.selectListByApartmentId(id);
+        //4.查询配套信息
+        List<FacilityInfo> facilityInfoList = facilityInfoMapper.selectListByApartmentId(id);
+        //5.查询最小租金
+        BigDecimal minRent = roomInfoMapper.selectMinRentByApartmentId(id);
+
+        ApartmentDetailVo apartmentDetailVo = new ApartmentDetailVo();
+
+        BeanUtils.copyProperties(apartmentInfo, apartmentDetailVo);
+        apartmentDetailVo.setGraphVoList(graphVoList);
+        apartmentDetailVo.setLabelInfoList(labelInfoList);
+        apartmentDetailVo.setFacilityInfoList(facilityInfoList);
+        apartmentDetailVo.setMinRent(minRent);
+        return apartmentDetailVo;
     }
 }
 
