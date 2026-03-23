@@ -18,6 +18,92 @@
     <!--由于在用到分页查询时，不能用collection进行嵌套结果映射，因此需要用到嵌套查询-->
     <select id="pageItem" resultMap="RoomItemVoMap">
         SELECT ri.id,
+        ri.room_number,
+        ri.rent,
+        ai.id apartment_id,
+        ai.name,
+        ai.introduction,
+        ai.district_id,
+        ai.district_name,
+        ai.city_id,
+        ai.city_name,
+        ai.province_id,
+        ai.province_name,
+        ai.address_detail,
+        ai.latitude,
+        ai.longitude,
+        ai.phone,
+        ai.is_release
+        FROM room_info ri
+        LEFT JOIN apartment_info ai
+        ON ri.apartment_id = ai.id
+        AND ai.is_deleted = 0
+        <where>
+            ri.is_deleted = 0
+            AND ri.is_release = 1
+            AND ri.id NOT IN (
+            SELECT room_id
+            FROM lease_agreement
+            WHERE is_deleted = 0
+            AND status IN (2, 5)
+            )
+            <if test="queryVo.provinceId != null">
+                AND ai.province_id = #{queryVo.provinceId}
+            </if>
+            <if test="queryVo.cityId != null">
+                AND ai.city_id = #{queryVo.cityId}
+            </if>
+            <if test="queryVo.districtId != null">
+                AND ai.district_id = #{queryVo.districtId}
+            </if>
+            <if test="queryVo.minRent != null and queryVo.maxRent != null">
+                AND (ri.rent &gt;= #{queryVo.minRent} AND ri.rent &lt;= #{queryVo.maxRent})
+            </if>
+            <if test="queryVo.paymentTypeId != null">
+                AND ri.id IN (
+                SELECT room_id
+                FROM room_payment_type
+                WHERE is_deleted = 0
+                AND payment_type_id = #{queryVo.paymentTypeId}
+                )
+            </if>
+        </where>
+        <if test="queryVo.orderType == 'desc' or queryVo.orderType == 'asc'">
+            ORDER BY ri.rent ${queryVo.orderType}
+        </if>
+    </select>
+
+    <select id="selectGraphListByRoomId" resultType="com.zju.lease.web.app.vo.graph.GraphVo">
+        SELECT name,
+               url
+        FROM graph_info
+        WHERE is_deleted = 0
+          AND item_type = 2
+          AND item_id = #{id}
+    </select>
+
+    <select id="selectLabelListByRoomId" resultType="com.zju.lease.model.entity.LabelInfo">
+        SELECT id,
+               type,
+               name
+        FROM label_info
+        WHERE is_deleted = 0
+          AND id IN (SELECT label_id
+                     FROM room_label
+                     WHERE is_deleted = 0
+                       AND room_id = #{id})
+    </select>
+
+    <select id="selectMinRentByApartmentId" resultType="java.math.BigDecimal">
+        select min(rent)
+        from room_info
+        where is_deleted = 0
+          and is_release = 1
+          and apartment_id = #{id}
+    </select>
+
+    <select id="pageItemByApartmentId" resultMap="RoomItemVoMap">
+        SELECT ri.id,
                ri.room_number,
                ri.rent,
                ai.id apartment_id,
@@ -35,72 +121,15 @@
                ai.phone,
                ai.is_release
         FROM room_info ri
-        LEFT JOIN apartment_info ai
-        ON ri.apartment_id = ai.id
-        AND ai.is_deleted = 0
-        <where>
-            ri.is_deleted = 0
-            AND ri.is_release = 1
-            AND ri.id NOT IN (
-                                SELECT room_id
-                                FROM lease_agreement
-                                WHERE is_deleted = 0
-                                AND status IN (2, 5)
-            )
-            <if test="queryVo.provinceId != null">
-                AND ai.province_id = #{queryVo.provinceId}
-            </if>
-            <if test="queryVo.cityId != null">
-                AND ai.city_id = #{queryVo.cityId}
-            </if>
-            <if test="queryVo.districtId != null">
-                AND ai.district_id = #{queryVo.districtId}
-            </if>
-            <if test="queryVo.minRent != null and queryVo.maxRent != null">
-                AND (ri.rent &gt;= #{queryVo.minRent} AND ri.rent &lt;= #{queryVo.maxRent})
-            </if>
-            <if test="queryVo.paymentTypeId != null">
-                AND ri.id IN (
-                            SELECT room_id
-                            FROM room_payment_type
+                 LEFT JOIN apartment_info ai
+                           ON ri.apartment_id = ai.id
+                               AND ai.is_deleted = 0
+        WHERE ri.is_deleted = 0
+          AND ri.apartment_id = #{id}
+          AND ri.is_release = 1
+          AND ri.id NOT IN (SELECT room_id
+                            FROM lease_agreement
                             WHERE is_deleted = 0
-                            AND payment_type_id = #{queryVo.paymentTypeId}
-                )
-            </if>
-        </where>
-        <if test="queryVo.orderType == 'desc' or queryVo.orderType == 'asc'">
-            ORDER BY ri.rent ${queryVo.orderType}
-        </if>
-    </select>
-    
-    <select id="selectGraphListByRoomId" resultType="com.zju.lease.web.app.vo.graph.GraphVo">
-        SELECT name,
-                url
-        FROM graph_info
-        WHERE is_deleted = 0
-        AND item_type = 2
-        AND item_id = #{id}
-    </select>
-    
-    <select id="selectLabelListByRoomId" resultType="com.zju.lease.model.entity.LabelInfo">
-        SELECT id,
-                type,
-                name
-        FROM label_info
-        WHERE is_deleted = 0
-        AND id IN (
-                    SELECT label_id
-                    FROM room_label
-                    WHERE is_deleted = 0
-                    AND room_id = #{id}
-        )
-    </select>
-
-    <select id="selectMinRentByApartmentId" resultType="java.math.BigDecimal">
-        select min(rent)
-        from room_info
-        where is_deleted = 0
-          and is_release = 1
-          and apartment_id = #{id}
+                              AND status IN (2, 5))
     </select>
 </mapper>
