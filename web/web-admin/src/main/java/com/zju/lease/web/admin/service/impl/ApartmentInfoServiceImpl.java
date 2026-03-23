@@ -108,40 +108,39 @@ public class ApartmentInfoServiceImpl extends ServiceImpl<ApartmentInfoMapper, A
         }
 
         // 插入配套列表
-        List<FacilityInfo> facilityInfoList = apartmentSubmitVo.getFacilityInfoList();
+        List<Long> facilityInfoList = apartmentSubmitVo.getFacilityInfoIds();
         if (!CollectionUtils.isEmpty(facilityInfoList)) {
             ArrayList<ApartmentFacility> facilityList = new ArrayList<>();
-            for (FacilityInfo facilityInfo : facilityInfoList) {
+            for (Long facilityId : facilityInfoList) {
                 ApartmentFacility apartmentFacility = new ApartmentFacility();
                 apartmentFacility.setApartmentId(apartmentSubmitVo.getId());
-                apartmentFacility.setFacilityId(facilityInfo.getId());
+                apartmentFacility.setFacilityId(facilityId);
                 facilityList.add(apartmentFacility);
             }
-
             apartmentFacilityService.saveBatch(facilityList);
         }
 
         // 插入标签列表
-        List<LabelInfo> labelInfoList = apartmentSubmitVo.getLabelInfoList();
-        if (!CollectionUtils.isEmpty(labelInfoList)) {
+        List<Long> labelIdList = apartmentSubmitVo.getLabelIds();
+        if (!CollectionUtils.isEmpty(labelIdList)) {
             List<ApartmentLabel> apartmentLabelList = new ArrayList<>();
-            for (LabelInfo labelInfo : labelInfoList) {
+            for (Long labelId : labelIdList) {
                 ApartmentLabel apartmentLabel = new ApartmentLabel();
                 apartmentLabel.setApartmentId(apartmentSubmitVo.getId());
-                apartmentLabel.setLabelId(labelInfo.getId());
+                apartmentLabel.setLabelId(labelId);
                 apartmentLabelList.add(apartmentLabel);
             }
             apartmentLabelService.saveBatch(apartmentLabelList);
         }
 
         // 插入杂费列表
-        List<FeeValueVo> feeValueVoList = apartmentSubmitVo.getFeeValueVoList();
+        List<Long> feeValueVoList = apartmentSubmitVo.getFeeValueIds();
         if (!CollectionUtils.isEmpty(feeValueVoList)) {
             ArrayList<ApartmentFeeValue> apartmentFeeValueList = new ArrayList<>();
-            for (FeeValueVo feeValueVo : feeValueVoList) {
+            for (Long feeValueId : feeValueVoList) {
                 ApartmentFeeValue apartmentFeeValue = new ApartmentFeeValue();
                 apartmentFeeValue.setApartmentId(apartmentSubmitVo.getId());
-                apartmentFeeValue.setFeeValueId(feeValueVo.getId());
+                apartmentFeeValue.setFeeValueId(feeValueId);
                 apartmentFeeValueList.add(apartmentFeeValue);
             }
             apartmentFeeValueService.saveBatch(apartmentFeeValueList);
