@@ -22,6 +22,7 @@ import com.zju.lease.web.app.vo.room.RoomQueryVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -68,6 +69,7 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo>
     private BrowsingHistoryService browsingHistoryService;
 
     @Autowired
+    @Qualifier("myRedisTemplate")
     private RedisTemplate redisTemplate;
 
     @Override
