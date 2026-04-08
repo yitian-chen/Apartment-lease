@@ -8,6 +8,7 @@ import com.zju.lease.common.result.Result;
 import com.zju.lease.model.entity.RoomInfo;
 import com.zju.lease.model.enums.ReleaseStatus;
 import com.zju.lease.web.admin.service.RoomInfoService;
+import com.zju.lease.web.admin.vo.room.LandlordSelectVo;
 import com.zju.lease.web.admin.vo.room.RoomDetailVo;
 import com.zju.lease.web.admin.vo.room.RoomItemVo;
 import com.zju.lease.web.admin.vo.room.RoomQueryVo;
@@ -74,6 +75,20 @@ public class RoomController {
         queryWrapper.eq(RoomInfo::getApartmentId, id);
         List<RoomInfo> list = service.list(queryWrapper);
         return Result.ok(list);
+    }
+
+    @Operation(summary = "获取房东列表(用于选择房东)")
+    @GetMapping("listLandlords")
+    public Result<List<LandlordSelectVo>> listLandlords() {
+        List<LandlordSelectVo> result = service.listLandlords();
+        return Result.ok(result);
+    }
+
+    @Operation(summary = "根据房间id获取房东信息")
+    @GetMapping("getLandlordByRoomId")
+    public Result<LandlordSelectVo> getLandlordByRoomId(@RequestParam Long id) {
+        LandlordSelectVo result = service.getLandlordByRoomId(id);
+        return Result.ok(result);
     }
 
 }

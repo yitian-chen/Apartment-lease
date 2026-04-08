@@ -4,10 +4,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zju.lease.model.entity.RoomInfo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zju.lease.web.admin.vo.room.LandlordSelectVo;
 import com.zju.lease.web.admin.vo.room.RoomDetailVo;
 import com.zju.lease.web.admin.vo.room.RoomItemVo;
 import com.zju.lease.web.admin.vo.room.RoomQueryVo;
 import com.zju.lease.web.admin.vo.room.RoomSubmitVo;
+
+import java.util.List;
 
 /**
 * @author liubo
@@ -23,4 +26,8 @@ public interface RoomInfoService extends IService<RoomInfo> {
     RoomDetailVo getDetailById(Long id);
 
     void removeRoomById(Long id);
+
+    List<LandlordSelectVo> listLandlords();
+
+    LandlordSelectVo getLandlordByRoomId(Long roomId);
 }

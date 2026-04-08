@@ -38,4 +38,7 @@ public class RoomDetailVo extends RoomInfo {
     @Schema(description = "租期列表")
     private List<LeaseTerm> leaseTermList;
 
+    @Schema(description = "房东信息(未发布则不返回)")
+    private LandlordInfoVo landlordInfo;
+
 }

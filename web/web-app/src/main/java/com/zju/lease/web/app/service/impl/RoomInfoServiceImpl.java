@@ -6,7 +6,9 @@ import com.zju.lease.common.constant.RedisConstant;
 import com.zju.lease.common.login.LoginUser;
 import com.zju.lease.common.login.LoginUserHolder;
 import com.zju.lease.model.entity.*;
+import com.zju.lease.model.enums.BaseStatus;
 import com.zju.lease.model.enums.ItemType;
+import com.zju.lease.model.enums.ReleaseStatus;
 import com.zju.lease.web.app.mapper.*;
 import com.zju.lease.web.app.service.ApartmentInfoService;
 import com.zju.lease.web.app.service.BrowsingHistoryService;
@@ -16,6 +18,7 @@ import com.zju.lease.web.app.vo.apartment.ApartmentItemVo;
 import com.zju.lease.web.app.vo.attr.AttrValueVo;
 import com.zju.lease.web.app.vo.fee.FeeValueVo;
 import com.zju.lease.web.app.vo.graph.GraphVo;
+import com.zju.lease.web.app.vo.room.LandlordInfoVo;
 import com.zju.lease.web.app.vo.room.RoomDetailVo;
 import com.zju.lease.web.app.vo.room.RoomItemVo;
 import com.zju.lease.web.app.vo.room.RoomQueryVo;
@@ -61,6 +64,9 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo>
 
     @Autowired
     private FeeValueMapper feeValueMapper;
+
+    @Autowired
+    private UserInfoMapper userInfoMapper;
 
     @Autowired
     private ApartmentInfoService apartmentInfoService;
@@ -116,6 +122,19 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo>
             roomDetailVo.setPaymentTypeList(paymentTypeList);
             roomDetailVo.setFeeValueVoList(feeValueVoList);
             roomDetailVo.setLeaseTermList(leaseTermList);
+
+            // 设置房东信息(仅当房间已发布且房东已设置时)
+            if (roomInfo.getIsRelease() == ReleaseStatus.RELEASED && roomInfo.getLandlordId() != null) {
+                UserInfo landlord = userInfoMapper.selectById(roomInfo.getLandlordId());
+                if (landlord != null && landlord.getStatus() == BaseStatus.ENABLE) {
+                    LandlordInfoVo landlordInfo = new LandlordInfoVo();
+                    landlordInfo.setUserId(landlord.getId());
+                    landlordInfo.setPhone(landlord.getPhone());
+                    landlordInfo.setNickname(landlord.getNickname());
+                    landlordInfo.setAvatarUrl(landlord.getAvatarUrl());
+                    roomDetailVo.setLandlordInfo(landlordInfo);
+                }
+            }
 
             // 将数据库中查询出的信息缓存到 redis template 中
             redisTemplate.opsForValue().set(key, roomDetailVo);

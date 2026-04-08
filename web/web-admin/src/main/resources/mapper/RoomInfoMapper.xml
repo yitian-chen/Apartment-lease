@@ -5,6 +5,8 @@
 <mapper namespace="com.zju.lease.web.admin.mapper.RoomInfoMapper">
     <resultMap id="RoomItemVoMap" type="com.zju.lease.web.admin.vo.room.RoomItemVo" autoMapping="true">
         <id property="id" column="id"/>
+        <result property="landlordId" column="landlord_id"/>
+        <result property="landlordNickname" column="landlord_nickname"/>
         <association property="apartmentInfo" javaType="com.zju.lease.model.entity.ApartmentInfo" autoMapping="true">
             <id property="id" column="apart_id"/>
             <result property="isRelease" column="apart_id_release"/>
@@ -17,6 +19,7 @@
             ri.rent,
             ri.apartment_id,
             ri.is_release,
+            ri.landlord_id,
             la.room_id IS NOT NULL is_check_in,
             la.lease_end_date,
             ai.id apart_id,
@@ -32,7 +35,8 @@
             ai.latitude,
             ai.longitude,
             ai.phone,
-            ai.is_release apart_is_release
+            ai.is_release apart_is_release,
+            ui.nickname landlord_nickname
         FROM room_info ri
         LEFT JOIN lease_agreement la
         ON ri.id = la.room_id
@@ -41,6 +45,9 @@
         LEFT JOIN apartment_info ai
         ON ri.apartment_id = ai.id
         AND ai.is_deleted = 0
+        LEFT JOIN user_info ui
+        ON ri.landlord_id = ui.id
+        AND ui.is_deleted = 0
         <where>
             ri.is_deleted = 0
             <if test="queryVo.provinceId != null">

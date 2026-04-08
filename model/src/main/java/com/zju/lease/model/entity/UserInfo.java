@@ -34,5 +34,4 @@ public class UserInfo extends BaseEntity {
     @TableField(value = "status")
     private BaseStatus status;
 
-
 }

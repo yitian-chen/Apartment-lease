@@ -5,12 +5,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zju.lease.common.constant.RedisConstant;
 import com.zju.lease.model.entity.*;
+import com.zju.lease.model.enums.BaseStatus;
 import com.zju.lease.model.enums.ItemType;
 import com.zju.lease.web.admin.mapper.*;
 import com.zju.lease.web.admin.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zju.lease.web.admin.vo.attr.AttrValueVo;
 import com.zju.lease.web.admin.vo.graph.GraphVo;
+import com.zju.lease.web.admin.vo.room.LandlordSelectVo;
 import com.zju.lease.web.admin.vo.room.RoomDetailVo;
 import com.zju.lease.web.admin.vo.room.RoomItemVo;
 import com.zju.lease.web.admin.vo.room.RoomQueryVo;
@@ -77,6 +79,12 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo>
 
     @Autowired
     private ApartmentInfoMapper apartmentInfoMapper;
+
+    @Autowired
+    private UserInfoMapper userInfoMapper;
+
+    @Autowired
+    private UserInfoService userInfoService;
 
     @Autowired
     @Qualifier("myRedisTemplate")
@@ -254,6 +262,12 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo>
         roomDetailVo.setPaymentTypeList(paymentTypeList);
         roomDetailVo.setLeaseTermList(leaseTermList);
 
+        // 设置房东信息
+        if (roomInfo.getLandlordId() != null) {
+            UserInfo landlordInfo = userInfoMapper.selectById(roomInfo.getLandlordId());
+            roomDetailVo.setLandlordInfo(landlordInfo);
+        }
+
         return roomDetailVo;
     }
 
@@ -296,6 +310,42 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo>
         // 删除 redis 中的数据缓存
         String key = RedisConstant.APP_ROOM_PREFIX + id;
         redisTemplate.delete(key);
+    }
+
+    @Override
+    public List<LandlordSelectVo> listLandlords() {
+        LambdaQueryWrapper<UserInfo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(UserInfo::getStatus, BaseStatus.ENABLE);
+        List<UserInfo> users = userInfoService.list(queryWrapper);
+
+        List<LandlordSelectVo> result = new ArrayList<>();
+        for (UserInfo user : users) {
+            LandlordSelectVo vo = new LandlordSelectVo();
+            vo.setId(user.getId());
+            vo.setPhone(user.getPhone());
+            vo.setNickname(user.getNickname());
+            vo.setAvatarUrl(user.getAvatarUrl());
+            result.add(vo);
+        }
+        return result;
+    }
+
+    @Override
+    public LandlordSelectVo getLandlordByRoomId(Long roomId) {
+        RoomInfo roomInfo = roomInfoMapper.selectById(roomId);
+        if (roomInfo == null || roomInfo.getLandlordId() == null) {
+            return null;
+        }
+        UserInfo landlord = userInfoMapper.selectById(roomInfo.getLandlordId());
+        if (landlord == null) {
+            return null;
+        }
+        LandlordSelectVo vo = new LandlordSelectVo();
+        vo.setId(landlord.getId());
+        vo.setPhone(landlord.getPhone());
+        vo.setNickname(landlord.getNickname());
+        vo.setAvatarUrl(landlord.getAvatarUrl());
+        return vo;
     }
 }
 

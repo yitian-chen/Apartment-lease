@@ -5866,3 +5866,8 @@ CREATE TABLE `chat_conversation_read` (
                                           UNIQUE KEY `uk_user_conversation` (`user_id`, `conversation_id`),
                                           KEY `idx_conversation_id` (`conversation_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会话已读状态表';
+
+ALTER TABLE `room_info` ADD COLUMN `landlord_id` bigint NULL DEFAULT NULL
+    COMMENT '房东用户id' AFTER `is_release`;
+
+ALTER TABLE `room_info` ADD INDEX `idx_landlord_id` (`landlord_id`);

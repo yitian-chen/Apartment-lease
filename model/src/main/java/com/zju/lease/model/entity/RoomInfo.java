@@ -31,4 +31,8 @@ public class RoomInfo extends BaseEntity {
     @TableField(value = "is_release")
     private ReleaseStatus isRelease;
 
+    @Schema(description = "房东用户id")
+    @TableField(value = "landlord_id")
+    private Long landlordId;
+
 }
