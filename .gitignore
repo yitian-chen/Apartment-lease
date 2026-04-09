@@ -49,3 +49,6 @@ build/
 web/web-app/src/test/java/com/zju/lease/web/app/service/impl/SmsServiceImplTest.java
 
 .claudeignore
+.mvn
+
+docs
