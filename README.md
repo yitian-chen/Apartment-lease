@@ -60,11 +60,11 @@ LeaseGo 是一款现代化的全栈公寓租赁管理系统，基于 **Spring Bo
 
 ## 快速开始
 > **注意**：本项目采用前后端分离架构。本仓库为后端代码，前端界面请访问：[LeaseGo-Frontend 仓库链接](https://github.com/yitian-chen/LeaseGo-Frontend)。
+
 ### 1. 环境准备
 - JDK 17
-- MySQL 8.0+
-- Redis 6.2+
-- Minio
+- MySQL 8.0+ / Redis 6.2+ / Minio (可通过 Docker 一键启动)
+- Docker & Docker Compose
 
 ### 2. 配置文件说明
 项目配置文件均提供了模板。在启动前，请将各模块 `resources` 下的 `application.yml.example` 重命名为 `application.yml`，并配置：
@@ -98,6 +98,38 @@ java -jar web/web-admin/target/web-admin-1.0-SNAPSHOT.jar
 # 启动移动端接口 (端口 8081)
 java -jar web/web-app/target/web-app-1.0-SNAPSHOT.jar
 ```
+
+### 5. Docker 部署中间件
+项目提供 `docker-compose.yml.example`，可一键启动 MySQL、Redis、Minio 等依赖服务：
+
+```bash
+# 复制示例配置并填写隐私信息
+cp docker-compose.yml.example docker-compose.yml
+
+# 启动所有中间件服务
+docker-compose up -d
+
+# 查看运行状态
+docker-compose ps
+
+# 查看日志
+docker-compose logs -f
+
+# 停止并移除容器
+docker-compose down
+```
+
+> **注意**：首次使用请先编辑 `docker-compose.yml`，填写以下空值：
+> - `MYSQL_ROOT_PASSWORD`：MySQL root 密码
+> - `MINIO_ROOT_PASSWORD`：MinIO 控制台密码
+
+**已包含服务：**
+| 服务 | 端口 | 说明 |
+|------|------|------|
+| MySQL | 3307 | 数据库，默认账号 root |
+| Redis | 6379 | 缓存服务 |
+| MinIO | 9000/9001 | 对象存储，API端口9000，控制台9001 |
+
 > 可访问 Knife4j API 文档快速验证后端项目的启动情况  
 > 管理端: http://localhost:8080/doc.html  
 > 移动端: http://localhost:8081/doc.html
