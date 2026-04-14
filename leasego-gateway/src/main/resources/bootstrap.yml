@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: leasego-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_HOST:localhost}:${NACOS_PORT:8848}
+        namespace: ${NACOS_NAMESPACE:public}
+      config:
+        server-addr: ${NACOS_HOST:localhost}:${NACOS_PORT:8848}
+        namespace: ${NACOS_NAMESPACE:public}
+        file-extension: yml
+        shared-configs:
+          - data-id: common.yml
+            group: DEFAULT_GROUP
+            refresh: true
+  sentinel:
+    datasource:
+      flow:
+        nacos:
+          server-addr: ${NACOS_HOST:localhost}:${NACOS_PORT:8848}
+          dataId: ${spring.application.name}-sentinel-flow
+          groupId: SENTINEL_GROUP
+          dataType: json
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

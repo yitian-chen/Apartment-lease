@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: leasego-sms
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_HOST:localhost}:${NACOS_PORT:8848}
+        namespace: ${NACOS_NAMESPACE:public}
+      config:
+        server-addr: ${NACOS_HOST:localhost}:${NACOS_PORT:8848}
+        namespace: ${NACOS_NAMESPACE:public}
+        file-extension: yml
+        shared-configs:
+          - data-id: common.yml
+            group: DEFAULT_GROUP
+            refresh: true
+
+server:
+  port: 8089
+
+aliyun:
+  sms:
+    accessKeyId: ${ALIYUN_ACCESS_KEY_ID:}
+    accessKeySecret: ${ALIYUN_ACCESS_KEY_SECRET:}
+    endpoint: dysmsapi.aliyuncs.com
+    signName: ${ALIYUN_SMS_SIGN_NAME:}
+    templateCode: ${ALIYUN_SMS_TEMPLATE_CODE:}
