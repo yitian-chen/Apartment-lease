@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
 
-@FeignClient(name = "leasego-upms", path = "/upms")
+@FeignClient(name = "leasego-upms")
 public interface UpmsFeignClient {
 
     @PostMapping("/inner/admin/verify")
