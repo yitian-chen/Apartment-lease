@@ -14,15 +14,15 @@ spring:
     gateway:
       routes:
         - id: web-app
-          uri: http://localhost:8081
+          uri: lb://web-app
           predicates:
-            - Path=/app/**
+            - Path=/app/**, /v3/api-docs/**, /web-app-docs/**
           filters:
             - StripPrefix=0
         - id: chat-service
-          uri: http://localhost:8082
+          uri: lb://chat-service
           predicates:
-            - Path=/app/chat/**
+            - Path=/app/chat/**, /v3/api-docs/**, /chat-service-docs/**
           filters:
             - StripPrefix=0
       globalcors:
@@ -35,5 +35,12 @@ spring:
 knife4j:
   gateway:
     enabled: true
-    proxy:
-      enabled: true
+    discover:
+      version: openapi3
+    routes:
+      - name: 用户应用
+        url: /web-app-docs
+        service-name: web-app
+      - name: 聊天服务
+        url: /chat-service-docs
+        service-name: chat-service
