@@ -13,16 +13,16 @@ spring:
         enabled: false
     gateway:
       routes:
-        - id: web-app
-          uri: lb://web-app
-          predicates:
-            - Path=/app/**, /v3/api-docs/**, /web-app-docs/**
-          filters:
-            - StripPrefix=0
         - id: chat-service
           uri: lb://chat-service
           predicates:
             - Path=/app/chat/**, /v3/api-docs/**, /chat-service-docs/**
+          filters:
+            - StripPrefix=0
+        - id: web-app
+          uri: lb://web-app
+          predicates:
+            - Path=/app/**, /v3/api-docs/**, /web-app-docs/**
           filters:
             - StripPrefix=0
       globalcors:
