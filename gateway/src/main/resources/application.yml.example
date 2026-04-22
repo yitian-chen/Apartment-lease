@@ -1,0 +1,39 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        namespace: public
+      config:
+        enabled: false
+    gateway:
+      routes:
+        - id: web-app
+          uri: http://localhost:8081
+          predicates:
+            - Path=/app/**
+          filters:
+            - StripPrefix=0
+        - id: chat-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/app/chat/**
+          filters:
+            - StripPrefix=0
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: "*"
+            allowed-methods: "*"
+            allowed-headers: "*"
+
+knife4j:
+  gateway:
+    enabled: true
+    proxy:
+      enabled: true
