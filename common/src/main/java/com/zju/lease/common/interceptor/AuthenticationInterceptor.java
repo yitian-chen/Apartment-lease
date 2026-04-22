@@ -1,4 +1,4 @@
-package com.zju.lease.web.app.custom.interceptor;
+package com.zju.lease.common.interceptor;
 
 import com.zju.lease.common.login.LoginUser;
 import com.zju.lease.common.login.LoginUserHolder;
