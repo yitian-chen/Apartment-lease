@@ -4,12 +4,12 @@ import com.zju.lease.common.result.Result;
 import com.zju.lease.web.app.service.FileService;
 import io.minio.errors.*;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -25,8 +25,8 @@ public class FileUploadController {
     private FileService service;
 
     @Operation(summary = "上传文件")
-    @PostMapping("upload")
-    public Result<String> upload(@RequestParam MultipartFile file) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    @PostMapping(value = "upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Result<String> upload(@Parameter(description = "文件", required = true, schema = @Schema(type = "string", format = "binary")) @RequestParam("file") MultipartFile file) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
         String url = service.upload(file);
         return Result.ok(url);
     }

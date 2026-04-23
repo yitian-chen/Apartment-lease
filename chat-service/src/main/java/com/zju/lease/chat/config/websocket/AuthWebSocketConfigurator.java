@@ -1,17 +1,19 @@
 package com.zju.lease.chat.config.websocket;
 
-import com.zju.lease.common.exception.LeaseException;
-import com.zju.lease.common.result.ResultCodeEnum;
 import com.zju.lease.common.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.websocket.HandshakeResponse;
 import jakarta.websocket.server.HandshakeRequest;
 import jakarta.websocket.server.ServerEndpointConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 
 public class AuthWebSocketConfigurator extends ServerEndpointConfig.Configurator {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthWebSocketConfigurator.class);
 
     @Override
     public void modifyHandshake(ServerEndpointConfig sec, HandshakeRequest request, HandshakeResponse response) {
@@ -27,11 +29,17 @@ public class AuthWebSocketConfigurator extends ServerEndpointConfig.Configurator
 
                 sec.getUserProperties().put("username", username);
                 sec.getUserProperties().put("userId", userId);
+                log.info("WebSocket auth success, userId: {}, username: {}", userId, username);
             } catch (Exception e) {
-                throw new LeaseException(ResultCodeEnum.TOKEN_INVALID);
+                log.error("WebSocket auth failed: {}", e.getMessage());
+                // Don't throw here - let it proceed to onOpen which will close properly
+                sec.getUserProperties().put("username", null);
+                sec.getUserProperties().put("userId", null);
             }
         } else {
-            throw new LeaseException(ResultCodeEnum.TOKEN_EXPIRED);
+            log.error("WebSocket auth failed: token is empty");
+            sec.getUserProperties().put("username", null);
+            sec.getUserProperties().put("userId", null);
         }
     }
 }

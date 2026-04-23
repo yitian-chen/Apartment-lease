@@ -5,14 +5,23 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zju.lease.model.entity.Message;
 import com.zju.lease.model.entity.RedisChatMessage;
 import com.zju.lease.model.entity.ChatResponseMessage;
-import jakarta.websocket.*;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @ServerEndpoint(value = "/app/chat", configurator = AuthWebSocketConfigurator.class)
 @Component
 public class ChatEndpoint {
+
+    private static final Logger log = LoggerFactory.getLogger(ChatEndpoint.class);
 
     public static final Map<Long, Session> onlineUsers = new ConcurrentHashMap<>();
     private static RedisTemplate<String, Object> redisTemplate;
@@ -43,10 +54,19 @@ public class ChatEndpoint {
 
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) {
+        log.info("WebSocket onOpen called");
         this.currentUserName = (String) config.getUserProperties().get("username");
         this.currentUserId = (Long) config.getUserProperties().get("userId");
-        if (this.currentUserName == null || this.currentUserId == null) return;
+        log.info("WebSocket onOpen, username: {}, userId: {}", currentUserName, currentUserId);
+        if (this.currentUserName == null || this.currentUserId == null) {
+            try {
+                log.warn("WebSocket authentication failed, closing connection");
+                session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Authentication failed"));
+            } catch (IOException ignored) {}
+            return;
+        }
 
+        log.info("WebSocket connected successfully, userId: {}", this.currentUserId);
         onlineUsers.put(this.currentUserId, session);
 
         redisTemplate.opsForHash().put("chat:online_users", this.currentUserId.toString(), this.currentUserName);
