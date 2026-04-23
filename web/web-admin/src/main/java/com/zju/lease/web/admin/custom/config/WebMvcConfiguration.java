@@ -1,8 +1,7 @@
 package com.zju.lease.web.admin.custom.config;
 
 import com.zju.lease.web.admin.custom.converter.StringToBaseEnumConverterFactory;
-import com.zju.lease.web.admin.custom.interceptor.AuthenticationInterceptor;
-import okhttp3.Interceptor;
+import com.zju.lease.common.interceptor.AuthenticationInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
