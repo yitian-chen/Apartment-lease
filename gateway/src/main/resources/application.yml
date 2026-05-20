@@ -7,16 +7,33 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848
-        namespace: public
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+        namespace: ${NACOS_NAMESPACE:public}
       config:
         enabled: false
+    sentinel:
+      transport:
+        dashboard: ${SENTINEL_DASHBOARD:127.0.0.1:8858}
+        client-ip: 127.0.0.1
+      eager: true
+      scg:
+        fallback:
+          mode: response
+          response-body: '{"code":429,"message":"Too many requests, please try again later."}'
+          response-status: 429
+          content-type: application/json
     gateway:
       routes:
         - id: chat-service
           uri: lb://chat-service
           predicates:
             - Path=/app/chat/**, /v3/api-docs/**, /chat-service-docs/**
+          filters:
+            - StripPrefix=0
+        - id: agent-service
+          uri: lb://agent-service
+          predicates:
+            - Path=/api/agent/**, /v3/api-docs/**, /agent-service-docs/**
           filters:
             - StripPrefix=0
         - id: web-app
@@ -36,7 +53,7 @@ knife4j:
   gateway:
     enabled: true
     discover:
-      version: openapi3
+      enabled: false
     routes:
       - name: 用户应用
         url: /web-app-docs
@@ -44,3 +61,6 @@ knife4j:
       - name: 聊天服务
         url: /chat-service-docs
         service-name: chat-service
+      - name: AI助手服务
+        url: /agent-service-docs
+        service-name: agent-service

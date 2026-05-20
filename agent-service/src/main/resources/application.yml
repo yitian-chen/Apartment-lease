@@ -1,0 +1,64 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: agent-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+        namespace: ${NACOS_NAMESPACE:public}
+      config:
+        import-check:
+          enabled: false
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://${MYSQL_HOST:127.0.0.1}:${MYSQL_PORT:3307}/lease?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2b8
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD}
+    hikari:
+      connection-test-query: SELECT 1
+      connection-timeout: 60000
+      idle-timeout: 500000
+      max-lifetime: 540000
+      maximum-pool-size: 12
+      minimum-idle: 10
+      pool-name: AgentHikariPool
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      database: ${REDIS_DATABASE:0}
+
+  cloud:
+    sentinel:
+      transport:
+        dashboard: ${SENTINEL_DASHBOARD:127.0.0.1:8858}
+        client-ip: 127.0.0.1
+      eager: true
+      filter:
+        enabled: true
+
+springdoc:
+  api-docs:
+    path: /agent-service-docs
+  default-flat-param-object: true
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath*:/mapper/**/*.xml
+
+# DashScope (Alibaba text-embedding-v4)
+langchain4j:
+  dashscope:
+    embedding-model:
+      api-key: ${DASHSCOPE_API_KEY:your-dashscope-api-key}
+      model-name: text-embedding-v4
+
+# MiniMax (OpenAI-compatible chat model)
+minimax:
+  api-key: ${MINIMAX_API_KEY:your-minimax-api-key}
+  base-url: https://api.minimaxi.com/v1
+  model-name: MiniMax-M2.7

@@ -42,25 +42,21 @@ build/
 .DS_Store
 
 ### Applications ###
-**/src/main/resources/application.yml
-!**/src/main/resources/application.yml.example
+# application.yml 中的敏感信息已移至 .env，yml 文件可安全追踪
 
 # 忽略短信服务测试类（包含个人手机号）
 web/web-app/src/test/java/com/zju/lease/web/app/service/impl/SmsServiceImplTest.java
 
+# 忽略 .env（包含敏感信息）
+.env
+
 .claudeignore
-.mvn
+.claude
+
+INTERVIEW_PREP.md
 
 docs
 
-init/leasego_backup.sql
-
 init
 
-docker-compose.yml
-
 opt
-
-.claude
-
-.env
