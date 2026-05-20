@@ -75,7 +75,7 @@ RabbitMQ(5672/15672): 异步消息队列 (房间重索引、聊天持久化、�
 3. **健壮的权限体系:** 封装 **`ThreadLocal` 上下文持有者 (`LoginUserHolder`)**，配合自定义拦截器实现用户信息的无感传递，有效隔离各线程间的用户信息。
 4. **统一工程化规范:** 建立**全局异常拦截器 (`GlobalExceptionHandler`)**，统一捕获业务异常并返回标准 Result 格式。
 5. **类型安全与转换:** 针对业务中大量的状态枚举，自定义 **`StringToBaseEnumConverterFactory`**，实现 Web 层请求参数到数据库枚举类的自动映射，增强了代码的可维护性。
-6. **微服务架构:** 采用 **Spring Cloud Alibaba** 将单体应用拆分为 `gateway`、`web-app`、`chat-service` 三个独立服务，配合 **Nacos** 实现服务发现与配置管理。
+6. **微服务架构:** 采用 **Spring Cloud Alibaba** 将单体应用拆分为 `gateway`、`web-app`、`chat-service`、`agent-service` 四个独立服务，配合 **Nacos** 实现服务发现与配置管理。
 7. **WebSocket 集群实时通讯:** chat-service 独立部署，基于 **WebSocket + Redis Pub/Sub** 实现跨实例消息分发，支持多实例部署下的实时聊天；结合 JWT 实现消息发送者的身份认证。
 8. **API 网关统一入口:** **Spring Cloud Gateway** 作为统一入口，内置 `ForwardAuthFilter` 自动转发 `access-token` 请求头，聚合 **Knife4j** 文档至 `http://localhost:8083/doc.html`。
 9. **房源聊天联动:** 将传统租赁平台的信息孤岛打通，租客可直接在房源详情页发起与房东的即时通讯，降低沟通成本，提升平台粘性。
