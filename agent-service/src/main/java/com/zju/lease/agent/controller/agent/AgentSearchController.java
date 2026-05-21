@@ -12,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Tag(name = "AI助手")
 @RestController
@@ -44,7 +46,48 @@ public class AgentSearchController {
         // 3. 过滤 think 标签
         String cleaned = aiText.replaceAll("(?s)<think>.*?</think>", "").trim();
 
-        return Result.ok(new AgentSearchVo(cleaned, roomItems));
+        // 4. 解析 LLM 推荐结果编号，只保留推荐房间的卡片
+        List<AgentSearchVo.RoomItemVo> recommendedRooms = parseRecommendedRooms(cleaned, searchResult.roomIds(), roomItems);
+        String displayText = stripRecommendPrefix(cleaned);
+
+        return Result.ok(new AgentSearchVo(displayText, recommendedRooms));
+    }
+
+    /**
+     * 解析 LLM 回复中的 [推荐:N1,N3] 格式，提取匹配结果编号
+     */
+    private List<AgentSearchVo.RoomItemVo> parseRecommendedRooms(
+            String aiText, List<Long> allRoomIds, List<AgentSearchVo.RoomItemVo> allRoomItems) {
+        Matcher m = Pattern.compile("\\[推荐:\\s*([^\\]]+)\\]").matcher(aiText);
+        if (!m.find()) {
+            // LLM 未按要求格式返回，降级展示全部
+            return allRoomItems;
+        }
+        String ids = m.group(1).trim();
+        if (ids.equals("无")) return List.of();
+
+        Set<Integer> matchIndices = new HashSet<>();
+        for (String s : ids.split("[,，\\s]+")) {
+            try { matchIndices.add(Integer.parseInt(s.replaceAll("[^0-9]", ""))); } catch (NumberFormatException ignored) {}
+        }
+
+        List<AgentSearchVo.RoomItemVo> filtered = new ArrayList<>();
+        for (Integer idx : matchIndices) {
+            int i = idx - 1; // N1 → allRoomIds[0]
+            if (i >= 0 && i < allRoomIds.size()) {
+                Long roomId = allRoomIds.get(i);
+                allRoomItems.stream()
+                        .filter(r -> r.getId().equals(roomId))
+                        .findFirst()
+                        .ifPresent(filtered::add);
+            }
+        }
+        return filtered.isEmpty() ? allRoomItems : filtered;
+    }
+
+    /** 去掉 [推荐:...] 前缀，展示纯文本 */
+    private String stripRecommendPrefix(String text) {
+        return text.replaceFirst("\\[推荐:\\s*[^\\]]+\\]\\s*", "").trim();
     }
 
     @Operation(summary = "手动触发房间数据重新索引")
