@@ -42,10 +42,11 @@ public class ChatController {
     public Result<ChatHistoryVo> getMessages(@PathVariable Long userId) {
         Long currentUserId = LoginUserHolder.getLoginUser().getUserId();
         ChatHistoryVo history = chatMessageService.listMessagesByUsers(currentUserId, userId);
-        // 进入聊天页面，自动标记该会话已读
         ChatConversation conversation = chatConversationService.getConversationByTwoUsers(currentUserId, userId);
         if (conversation != null) {
+            // 标记已读 + 记录正在查看此会话
             chatConversationReadService.markAsRead(currentUserId, conversation.getId());
+            chatConversationReadService.markAsViewingConversation(currentUserId, conversation.getId());
         }
         return Result.ok(history);
     }
@@ -58,6 +59,14 @@ public class ChatController {
         if (conversation != null) {
             chatConversationReadService.markAsRead(currentUserId, conversation.getId());
         }
+        return Result.ok();
+    }
+
+    @Operation(summary = "离开与某用户的会话页面")
+    @PostMapping("/conversations/{userId}/leave")
+    public Result<Void> leaveConversation(@PathVariable Long userId) {
+        Long currentUserId = LoginUserHolder.getLoginUser().getUserId();
+        chatConversationReadService.leaveConversation(currentUserId);
         return Result.ok();
     }
 }
